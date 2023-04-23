@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta name="format-detection" content="telephone=no" />
+<meta name="format-detection" content="email=no">
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>369 - 熟人麻将</title>
+<script>
+//rem
+(function (doc, win) {
+  var docEl = doc.documentElement,
+	resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+	recalc = function () {
+	  var clientWidth = docEl.clientWidth;
+	  if (!clientWidth) return;
+	  if (clientWidth >= 750) {
+		docEl.style.fontSize = '100px';
+	  } else {
+		docEl.style.fontSize = 100 * (clientWidth / 750) + 'px';
+	  }
+	};
+
+  if (!doc.addEventListener) return;
+  win.addEventListener(resizeEvt, recalc, false);
+  doc.addEventListener('DOMContentLoaded', recalc, false);
+})(document, window);
+</script>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/invite.css">
+<style>
+body,p{padding:0;margin:0;border:0;outline: medium;}
+body,html{height:100%;}
+body{background:url("img/beijing.png") no-repeat center;background-size:cover;text-align:center;position:relative;}
+.mt10{margin-top:0.2rem;}
+.mt50{margin-top:1rem;}
+.box{width:6.8rem;margin:0 auto;margin-top:.5rem;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;}
+.box p{text-align:center;height:30px;line-height:30px;}
+.box .tit1{font-size:24px;}
+.box .tit2{font-size:20px;}
+.box .tips1{font-size:16px;color:#F00;}
+.box .tips2{font-size:16px;color:#F00;}
+.box .tips3{font-size:14px;}
+.box a{display:block;width:100%;height:1rem;line-height:1rem;font-size:20px;font-weight:normal;color:#FFF;text-align:center;border-radius:5px;margin-bottom:0.5rem;}
+.box .sd{background:#FF4700;}
+.box .hn{background:#FFB500;}
+.box .sr{background:#00A2FF;}
+</style>
+</head>
+<body class="bgimg">
+	<div class="box">
+		<p class="tit1">369 - 熟人麻将</p>
+		<p class="tit2">临时下载地址</p>
+		<!-- <p class="tips1">点击右上角 <strong>...</strong> 菜单，选择用手机的默认浏览器</p>
+		<p class="tips2">打开此页面，再进行下载各个版本的游戏</p> -->
+		<p class="tips3">客服微信：sljmj333</p>
+		
+		<a class="sr mt50" href="http://www.lsmkj.cn/nAgYk3" target="_blank">熟人麻将 - 苹果版本 - 下载</a>
+		<a class="sr" href="http://www.lsmkj.cn/W77To2" target="_blank">熟人麻将 - 安卓版本 - 下载</a>
+	</div>
+<script src="js/jquery-3.1.1.min.js"></script>
+<script src="js/index.js"></script>
+</body>
+</html>

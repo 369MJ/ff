@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		<meta name="format-detection" content="telephone=no" />
+		<meta name="format-detection" content="email=no">
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Cache-Control" content="no-cache" />
+		<meta http-equiv="Expires" content="0" />
+		<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+		<title>369-山东互娱</title>
+		<script>
+			(function(doc, win) {
+				var docEl = doc.documentElement,
+					resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+					recalc = function() {
+						var clientWidth = docEl.clientWidth;
+						if (!clientWidth) return;
+						if (clientWidth >= 750) {
+							docEl.style.fontSize = '100px';
+						} else {
+							docEl.style.fontSize = 100 * (clientWidth / 750) + 'px';
+						}
+					};
+
+				if (!doc.addEventListener) return;
+				win.addEventListener(resizeEvt, recalc, false);
+				doc.addEventListener('DOMContentLoaded', recalc, false);
+			})(document, window);
+		</script>
+		<link rel="stylesheet" href="css/base.css?v=20180605">
+		<link rel="stylesheet" href="css/agent.css?v=201806011">
+		<link rel="stylesheet" href="css/mobiscroll.full.min.css">
+		<style type="text/css">
+			.check{color:#FD7651;padding-right:.3rem;}
+			.not_check{color:#737775;padding-right:.3rem;}
+			.dateQuery{display:flex;flex-direction:row;justify-content:space-around;align-items:center;height:1.2rem;padding:0;padding-left:0.2rem;padding-right:0.2rem;}
+			.dateQuery .dateSelect{box-sizing:border-box;font-size:0.24rem;}
+			.dateQuery .line{margin:0;}
+			.dateQuery .btn{width:1rem;height:.6rem;margin-left:0;}
+			.income-navtabs .tabitem{width:30%;}
+			.income-navtabs .rewrite01{width:70%;float:right;text-align:right;}
+			.incomeList,
+			.incomeList ul{margin:0 auto;}
+			.incomeList{margin-top:.1rem;}
+			.incomeList .on{background:#FFF !important;}
+			.incomeList .off{background:#F7F7F7 !important;}
+			.incomeList .income-item{margin:0 auto;margin-bottom:0;border-bottom:1px solid #DCDDDD;padding:0;}
+			.incomeList .rewrite03{border-bottom:1px dashed #EEE;}
+			.incomeList .income-item .datalist{display:flex;flex-direction:row;justify-content:space-between;align-items:center;}
+			.incomeList .income-item .datalist .data-item{width:20%;height:1rem;line-height:1rem;float:none;font-size:0.28rem;color:#444;}
+			.incomeList .income-item .rewrite02 .data-item{font-size:0.24rem;color:#595959;}/* #595959 */
+		</style>
+	</head>
+	<body class="bgclo">
+		<div class="contWrap" id="app" v-cloak>
+			<div class="headfix">
+				<div class="ageHead">
+					<div class="txtC icotit">
+							<span class="back" onclick="goBack()"><i class="iconfont ico-goback">&#xe607;</i> 返回</span>
+							<span>牌局数</span>
+						<a class="iconfont ico-home" href="index.html">&#xe600;</a>
+					</div>
+				</div>
+			</div>
+			
+			<div class="topspc"></div>
+
+			<div class="income-navtabs clearfix">
+				<ul>
+					<li class="tabitem">
+						<span class="tabnav tabnavCur" @click="getBoutsList('2')">本月</span>
+					</li>
+					<li class="tabitem rewrite01">
+						<span class="tabnav" class="tabnavCur">牌局数汇总：{{ totalJuShu }}</span>
+					</li>
+				</ul>
+			</div>
+
+			<div class="dateQuery">
+				<span class="dateSelect" :class="{seled:beginDate}" id="selectBeginDate">{{ beginDateStr }}</span>
+				<i class="line"></i>
+				<span class="dateSelect" :class="{seled:endDate}" id="selectEndDate" @click="datetip">{{ endDateStr }}</span>
+				<button class="btn query-btn" @click="getBoutsList('4')">查询</button>
+				<button class="btn reset-btn" onclick="location.reload()">重置</button>
+			</div>
+			
+			<template v-if="nodata">
+				<p class="nodata">暂无历史收入数据</p>
+			</template>
+			
+			<div class="incomeList" v-else>
+				<ul>
+					<li class="income-item">
+						<ul class="datalist">
+							<li class="data-item">日期</li>
+							<li class="data-item">亲友圈ID</li>
+							<li class="data-item">名称</li>
+							<li class="data-item">人数</li>
+							<li class="data-item">牌局数</li>
+						</ul>
+					</li>
+					
+					<li class="income-item rewrite03" :class="{on:index%2==0,off:index%2!=0}" v-for="(item, index) in boutsList">
+						<ul class="datalist rewrite02">
+							<li class="data-item">{{ item.create_date }}</li>
+							<li class="data-item">{{ item.room_id }}</li>
+							<li class="data-item">{{ item.room_name }}</li>
+							<li class="data-item">{{ item.agent_friends_total_count }}</li>
+							<li class="data-item">{{ item.bout_count }}</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+			
+			<p class="nodata">{{errmsg}}</p>
+			<!--加载动画-->
+			<div class="loading" v-show="showLoading">
+				<div class="sk-circle">
+					<div class="sk-circle1 sk-child"></div>
+					<div class="sk-circle2 sk-child"></div>
+					<div class="sk-circle3 sk-child"></div>
+					<div class="sk-circle4 sk-child"></div>
+					<div class="sk-circle5 sk-child"></div>
+					<div class="sk-circle6 sk-child"></div>
+					<div class="sk-circle7 sk-child"></div>
+					<div class="sk-circle8 sk-child"></div>
+					<div class="sk-circle9 sk-child"></div>
+					<div class="sk-circle10 sk-child"></div>
+					<div class="sk-circle11 sk-child"></div>
+					<div class="sk-circle12 sk-child"></div>
+				</div>
+			</div>
+		</div>
+		<script src="env_path/path.js"></script>
+		<script src="js/jquery-1.10.1.min.js"></script>
+		<script src="js/layer_mobile/layer.js"></script>
+		<script src="js/mobiscroll.full.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/vue.min.js"></script>
+		<script>
+			Vue.config.devtools = true;
+		</script>
+		<script>
+			var vm = new Vue({
+				el: '#app',
+				data: {
+					showLoading: true,
+					session: '',
+					agent_id: '',
+					sign_id: '',
+					isActive: '2',
+					page: 1,
+					mindate: '2020-01-01',
+					beginDateStr: '年-月-日',
+					endDateStr: '年-月-日',
+					beginDate: '',
+					endDate: '',
+					boutsList: [],
+					nodata: false,
+					errmsg: '',
+					flag: true,
+					totalJuShu:0
+				},
+				
+				created: function() {
+					this.session  = get('session');
+					this.agent_id = get('agent_id');
+					this.sign_id  = get('sign_id');
+					this.getBoutsList('2');
+				},
+				
+				mounted: function() {
+					// 选择日期时间
+					var self      = this;
+					var curDate   = new Date();
+					var minYear   = curDate.getFullYear(),
+						minMonth  = curDate.getMonth(),
+						minDate01 = 1;
+					var maxYear   = curDate.getFullYear(),
+						maxMonth  = curDate.getMonth(),
+						maxDate   = curDate.getDate();
+					$('#selectBeginDate').mobiscroll().date({
+						theme: "android-ics light",
+						lang: 'zh',
+						cancelText: null,
+						display: 'bottom',
+						// minDate: new Date(self.mindate),
+						minDate: new Date(minYear, minMonth, minDate01),
+						maxDate: new Date(maxYear, maxMonth, maxDate),
+						dateFormat: 'yyyy-mm-dd',
+						onSelect: function(valueText, inst) {
+							self.beginDateStr = valueText;
+							self.beginDate    = valueText;
+							$('#selectEndDate').mobiscroll().date({
+								theme: "android-ics light",
+								lang: 'zh',
+								cancelText: null,
+								display: 'bottom',
+								minDate: new Date(self.beginDateStr),
+								maxDate: new Date(maxYear, maxMonth, maxDate),
+								dateFormat: 'yyyy-mm-dd',
+								onSelect: function(valueText, inst) {
+									self.endDateStr = valueText;
+									self.endDate    = valueText;
+								}
+							});
+						}
+					});
+					window.addEventListener('scroll', this.handleScroll);
+				},
+				
+				methods: {
+					datetip: function() {
+						if (!this.beginDate) {
+							layerMsg('请先选择开始日期！')
+						}
+					},
+					
+					getBoutsList: function(type) {
+						var self      = this;
+						self.isActive = type;
+						self.page     = 1;
+						if (type === '4') {
+							if (!self.beginDate) {
+								layerMsg('请先选择开始日期！');
+								return;
+							}
+							if (!self.endDate) {
+								layerMsg('请选择结束日期！');
+								return;
+							}
+						}
+						ajaxGet(
+							apipath + '/Api/MyBouts/BoutsList', {
+								session: self.session,
+								agent_id: self.agent_id,
+								start_day: self.beginDate,
+								end_day: self.endDate,
+								p: self.page,
+								type: self.isActive
+							},
+							function(res) {
+								console.log(res);
+								if (res.error === 0 && res.data.list) {
+									self.nodata     = false;
+									self.boutsList  = res.data.list;
+									self.totalJuShu = res.data.extra.totalJuShu;
+									
+									if (res.data.list.length === 10) {
+										self.errmsg = '上拉加载更多数据';
+										self.flag   = true;
+									} else {
+										self.errmsg = '';
+										self.flag   = false;
+									}
+								} else if (res.error === 0) {
+									self.nodata = true;
+									self.errmsg = '';
+									self.flag   = false;
+								} else {
+									layerMsg(res.msg);
+									if (res.msg === '登录消息已过期') {
+										goLogin();
+									}
+								}
+							},
+							function(res) {
+								console.log(res);
+							}
+						)
+					},
+					
+					getMoreBoutsList: function() {
+						var self = this;
+						ajaxGet(
+							apipath + '/Api/MyBouts/BoutsList', {
+								session: self.session,
+								agent_id: self.agent_id,
+								start_day: self.beginDate,
+								end_day: self.endDate,
+								p: self.page,
+								type: self.isActive
+							},
+							function(res) {
+								//console.log(res);
+								if (res.error === 0 && res.data.list) {
+									for (var i = 0; i < res.data.list.length; i++) {
+										self.boutsList.push(res.data.list[i]);
+									}
+									if (res.data.list.length === 10) {
+										self.errmsg = '上拉加载更多数据';
+									}
+									self.nodata = false;
+								} else if (res.error === 0) {
+									self.errmsg = '暂无更多数据';
+									self.flag   = false;
+								} else {
+									layerMsg(res.msg);
+									if (res.msg === '登录消息已过期') {
+										goLogin();
+									}
+								}
+							},
+							function(res) {
+								console.log(res);
+							}
+						)
+					},
+					
+					handleScroll() {
+						// 判断滚动到底部
+						if ($(window).scrollTop() >= $(document).height() - $(window).height() && this.flag) {
+							this.showLoading = true;
+							this.page++;
+							this.getMoreBoutsList(this.isActive);
+						}
+					}
+				}
+			});
+		</script>
+	</body>
+</html>

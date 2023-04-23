@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="format-detection" content="email=no">
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Cache-Control" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+
+  <title>369-山东互娱</title>
+
+  <script>
+    //rem
+    (function (doc, win) {
+      var docEl = doc.documentElement,
+        resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+        recalc = function () {
+          var clientWidth = docEl.clientWidth;
+          if (!clientWidth) return;
+          if (clientWidth >= 750) {
+            docEl.style.fontSize = '100px';
+          } else {
+            docEl.style.fontSize = 100 * (clientWidth / 750) + 'px';
+          }
+        };
+
+      if (!doc.addEventListener) return;
+      win.addEventListener(resizeEvt, recalc, false);
+      doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+  </script>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/agent.css">
+</head>
+
+<body class="bgclo">
+  <!--下级开始-->
+  <div class="contWrap" id="app" v-cloak>
+
+    <div class="headfix">
+      <div class="ageHead">
+        <div class="txtC icotit">
+          <span class="back" onclick="goBack()"><i class="iconfont ico-goback">&#xe607;</i> 返回</span>
+          <span>转卡</span>
+          <a class="iconfont ico-home" href="index.html">&#xe600;</a>
+        </div>
+      </div>
+    </div>
+    <div class="topspc"></div>
+    <p class="titTip clearfix">
+        请通过搜索客户，进行转卡
+        <a class="fr checktra" href="transferHistory.html">转卡记录》</a>
+    </p>
+    <div class="junior-queryBox clearfix">
+      <div class="searchBox">
+        <i class="iconfont ico-search">&#xe697;</i>
+        <input class="ipt" type="text" placeholder="输入客户ID或手机号" v-model="searchVal">
+      </div>
+      <button class="btn query-btn" @click="fn_search(searchVal)">搜索</button>
+    </div>
+        
+    <template v-if="getdata">
+      <div class="custInfo">
+        <ul>
+          <li class="info-item">
+            <span class="fl lab">昵称：</span>
+            <span class="fl con">{{ juniorData.cname }}</span>
+          </li>
+          <li class="info-item">
+            <span class="fl lab">ID：</span>
+            <span class="fl con">{{ juniorData.agent_id }}</span>
+          </li>
+          <li class="info-item">
+            <span class="fl lab">房卡数：</span>
+            <span class="fl con">{{ juniorData.ticket }}</span>
+          </li>
+          <li class="info-item">
+            <span class="fl lab">转卡数：</span>
+            <input class="fl ipt" type="text" placeholder="请输入转卡数" v-model="tra_count">
+          </li>
+        </ul>
+        <div class="cofbtn">
+          <button @click="transfer">确认转卡</button>
+        </div>
+      </div>
+    </template>
+    
+
+    <!--加载动画-->
+    <div class="loading" v-show="showLoading">
+      <div class="sk-circle">
+        <div class="sk-circle1 sk-child"></div>
+        <div class="sk-circle2 sk-child"></div>
+        <div class="sk-circle3 sk-child"></div>
+        <div class="sk-circle4 sk-child"></div>
+        <div class="sk-circle5 sk-child"></div>
+        <div class="sk-circle6 sk-child"></div>
+        <div class="sk-circle7 sk-child"></div>
+        <div class="sk-circle8 sk-child"></div>
+        <div class="sk-circle9 sk-child"></div>
+        <div class="sk-circle10 sk-child"></div>
+        <div class="sk-circle11 sk-child"></div>
+        <div class="sk-circle12 sk-child"></div>
+      </div>
+    </div>
+
+    <div class="botspc"></div>
+    
+  </div>
+
+
+  <script src="env_path/path.js"></script>
+  <script src="js/jquery-1.10.1.min.js"></script>
+  <script src="js/layer_mobile/layer.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/vue.min.js"></script>
+
+  <script>
+    var vm = new Vue({
+      el: '#app',
+      data: {
+        session: '',
+        agent_id: '',
+        sign_id: '',
+        showLoading: true,
+        getdata: false,
+        juniorData: {
+          
+        },
+        searchVal: '',
+        tra_count: ''
+      },
+      created: function(){
+        this.session = get('session');
+        this.agent_id = get('agent_id');
+        this.sign_id = get('sign_id');
+        this.searchVal = getparam('userid');
+        this.checkJunior();
+      },
+      mounted: function () {
+        
+      },
+      methods: {
+        checkJunior: function(){
+          var self = this;
+          ajaxGet(
+            apipath + '/Api/NewAgentInfo/getAgentInfo',
+            {
+              session: self.session,
+              agent_id: self.agent_id,
+              telphone: self.searchVal
+            },
+            function(res){
+              //console.log(res);
+              if(res.error === 0){
+                self.juniorData = res.data;
+                self.getdata = true;
+              }else{
+                self.getdata = false;
+                layerMsg( res.msg );
+                if(res.msg==='登录消息已过期'){
+                  goLogin();
+                }
+              }
+            },
+            function(res){
+              console.log(res);
+            }
+          )
+        },
+        fn_search: function(){
+          if(this.searchVal == ''){
+            layerMsg('请输入查询内容！')
+          }else if(!/^[0-9]*$/.test(this.searchVal)){
+            layerMsg('请输入正确的客户ID或手机号！')
+          }else{
+            this.checkJunior();
+          }
+        },
+        transfer: function(){
+          var self = this;
+          if( self.tra_count == '' ){
+            layerMsg('请输入转卡数！');
+            return false;
+          }
+          if( !/^\+?[1-9][0-9]*$/.test(self.tra_count) ){
+            layerMsg('请输入正确转卡数！');
+            return false;
+          }
+          ajaxGet(
+            apipath + '/Api/NewAgentInfo/doTurnCard',
+            {
+              session: self.session,
+              agent_id: self.agent_id,
+              trunk_agent_id: self.juniorData.agent_id,
+              identity_flag: self.juniorData.identity_flag,
+              number: self.tra_count
+            },
+            function(res){
+              //console.log(res);
+              if(res.error === 0){
+                //layerMsg( res.msg );
+                layer.open({
+                  content: res.msg,
+                  btn: ['返回首页','继续转卡'],
+                  yes: function(){
+                    window.location.href ='index.html';
+                  }
+                });
+              }else{
+                layerMsg( res.msg );
+                if(res.msg==='登录消息已过期'){
+                  goLogin();
+                }
+              }
+            },
+            function(res){
+              console.log(res);
+            }
+          )
+        }
+      }
+    })
+  </script>
+
+</body>
+
+</html>

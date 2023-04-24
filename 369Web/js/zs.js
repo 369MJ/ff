@@ -3,7 +3,7 @@ var data = sessionStorage.getItem('data');
 // 检查数据是否存在并且是一个字符串
 if (data && typeof data === 'string') {
   // 将数据分成100个小块
-  var chunks = chunkString(data, 200);
+  var chunks = chunkString(data, 2000);
   // 循环读取每个小块
   for (var i = 0; i < chunks.length; i++) {
     // 处理每个小块的数据
@@ -186,23 +186,73 @@ function layerMsg(msg) {
   });
 }
 
-//判断微信浏览器
-function is_weixn() {
-  var ua = navigator.userAgent.toLowerCase();
-  if (ua.match(/MicroMessenger/i) == "micromessenger") {
-    return true;
-  } else {
-    return false;
+// 定义每页显示的数据量
+var pageSize = 10;
+// 定义当前页码
+var currentPage = 1;
+
+// 加载数据函数
+function loadData() {
+  // 发送Ajax请求获取数据
+  $.ajax({
+    url: 'http://sdagent.369pre.com/Client/',
+    data: {
+      page: currentPage,
+      pageSize: pageSize
+    },
+    success: function(data) {
+      // 处理返回的数据
+      processData(data);
+      
+      // 如果当前页码小于总页数，则继续加载下一页数据
+      if (currentPage < getTotalPage(data.totalCount)) {
+        currentPage++;
+        loadData();
+      }
+    }
+  });
+}
+
+// 处理每个小块的数据
+function processData(data) {
+  // 在这里添加您的数据处理代码
+}
+
+// 获取总页数
+function getTotalPage(totalCount) {
+  return Math.ceil(totalCount / pageSize);
+}
+
+// 启动加载数据
+loadData();
+
+// 启动文字滚动
+autoScroll('#scrollDiv');
+
+// 定义动画帧函数
+function animate() {
+  // 计算下一帧位置
+  var marginTop = parseFloat($('#scrollDiv').css('margin-top'));
+  marginTop -= 0.6;
+  
+  // 如果已经滚动到底部，则重置位置
+  if (marginTop < -($('#scrollDiv li').height() * $('#scrollDiv li').length)) {
+    marginTop = 0;
+    
+    // 加载下一页数据
+    if (currentPage < getTotalPage(data.totalCount)) {
+      currentPage++;
+      loadData();
+    }
   }
+  
+  // 设置新位置
+  $('#scrollDiv').css('margin-top', marginTop + 'rem');
+  
+  // 请求下一帧动画
+  requestAnimationFrame(animate);
 }
 
+// 启动动画
+animate();
 
-
-//文字滚动方法
-function autoScroll(obj) {
-  $(obj).animate({
-      marginTop: "-0.6rem"
-  }, 600, "linear", function () {
-      $(this).css({marginTop: "0rem"}).find("li:first").appendTo(this);
-  })
-}

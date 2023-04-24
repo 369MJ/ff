@@ -1,3 +1,35 @@
+// 从sessionStorage中获取数据
+var data = sessionStorage.getItem('data');
+// 检查数据是否存在并且是一个字符串
+if (data && typeof data === 'string') {
+  // 将数据分成100个小块
+  var chunks = chunkString(data, 200);
+  // 循环读取每个小块
+  for (var i = 0; i < chunks.length; i++) {
+    // 处理每个小块的数据
+    processData(chunks[i]);
+  }
+}
+
+// 将字符串分成指定大小的小块
+function chunkString(str, size) {
+  var chunks = [];
+  for (var i = 0; i < str.length; i += size) {
+    chunks.push(str.substr(i, size));
+  }
+  return chunks;
+}
+
+// 处理每个小块的数据
+function processData(data) {
+  // 在这里添加您的数据处理代码
+}
+
+// 兼容原先的代码，如果原先的代码存在processData函数，则在新代码中调用它
+if (typeof processData === 'function') {
+  processData(data);
+}
+
 //本地存储
 var localStorage = window.sessionStorage;
 function get(name) {
@@ -153,4 +185,3 @@ function layerMsg(msg) {
     time: 2
   });
 }
-

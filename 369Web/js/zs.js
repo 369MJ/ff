@@ -185,3 +185,24 @@ function layerMsg(msg) {
     time: 2
   });
 }
+
+//判断微信浏览器
+function is_weixn() {
+  var ua = navigator.userAgent.toLowerCase();
+  if (ua.match(/MicroMessenger/i) == "micromessenger") {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+
+
+//文字滚动方法
+function autoScroll(obj) {
+  $(obj).animate({
+      marginTop: "-0.6rem"
+  }, 600, "linear", function () {
+      $(this).css({marginTop: "0rem"}).find("li:first").appendTo(this);
+  })
+}
